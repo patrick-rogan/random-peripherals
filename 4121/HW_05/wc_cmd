@@ -1,0 +1,33 @@
+# The general process here is to do the following:
+# 1. use several grep commands to preprocess that data
+# 2. pipe that data into the sed commands supplied by the assignment
+# 3. use a series of awk, sed and grep commands to process the data into a formatted list
+# 4. print formatted data
+
+cat worldcup.txt | 
+
+grep -v ":"| grep -v "!" | grep '[A-Za-z]' |
+
+sed 's/\[\[\([0-9]*\)[^]]*\]\]/\1/g; s/.*fb|\([A-Za-z]*\)}}/\1/g; s/<sup><\/sup>//g; s/|bgcolor[^|]*//g; s/(//g; s/)//g; s/|align=center| —/0/; s/|[0-9]\s//g;' |
+
+awk '{print (NR-1)%5 " " $0}' | # put mod of line number before each row, this will be place in wc
+
+sed 's/0 //;' | #strip out mod 0 character from country line
+
+awk '{wt = (","substr($0,1,1)" "); gsub(", ",wt,$0); print $0}'  |
+
+awk '{if ($0~/[A-Z]/) country = $0; nsplit = split($0,array, ","); 
+	for(i = 0; i<=nsplit; i++) 
+		print array[i]" "country}' |
+
+# to give the number of wins per country, implement the following comments
+
+grep '[0-9][0-9][0-9][0-9]' | grep '[1-4\s]' | # replace [1-4\s] with '1 '
+
+awk '{split($0,array, " "); print array[1]" "array[2]" "array[3]}' # add pipe to end of line
+
+#sed 's/[0-9][0-9][0-9][0-9]//g; s/1//g; s/2//g; s/3//g; s/4//g' | # uncomment this line
+
+#uniq -c  # uncomment this line
+
+

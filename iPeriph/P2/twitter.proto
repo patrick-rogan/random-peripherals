@@ -1,0 +1,19 @@
+package l1;
+
+message Tweet {
+  message Insert {
+    required string text = 1;
+    required int64 id = 2;
+    required int64 u_id = 3;
+    required string u_name = 4;
+    required string model = 5;
+    required string created_at = 6;
+  }
+
+  optional Insert insert = 1;
+}
+
+message Tweets {
+  repeated Tweet tweets = 1;
+}
+

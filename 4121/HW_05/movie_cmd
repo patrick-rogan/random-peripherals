@@ -1,0 +1,22 @@
+# The general process here is to do the following:
+# 1. use grep to only include lines with '[[' or ']]' in them, everything else does not have relevant data
+# 2. use sed to strip out '[',']','''(\x27) and the first pipe
+# 3. split the line on || 
+# 4. user gsub commands in awk to clean up the individual expressions
+# 5. print cleaned data
+
+cat 2013films.txt | 
+
+grep '\[\[' | sed 's/\[//g' | sed 's/\]//g' | sed 's/\x27//g' | 
+
+sed 's/|//' |
+
+awk -F'\|\|' '{gsub(".+\|","",$1); gsub(",",";",$1)} 
+	{gsub("\|.+","",$2); gsub("/.+","",$2); gsub(",",";",$2)} 
+	{gsub("\([Dd]irector.+","",$3); gsub(".+\|","",$3); gsub(",",";",$3)}
+	{gsub(",.+\|","",$4); gsub(".+\|","",$4); gsub(",",";",$4); 
+	{gsub(".+publisher=","",$5); gsub("\|.+","",$5)}; print $1,",",$2,",",$3,",",$4,",",$5 }' # |
+
+# sort | uniq -c  | sort -n | tail -1
+
+# can print the studio that produced the most movies by replacing print $1,",",$2,",",$3,",",$4,",",$5 with command print $2, adding the commented pipe, and uncommenting the next line
